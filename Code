@@ -1,5 +1,24 @@
 *****************************************Source Code file*****************************************************************
 
+from __future__ import division, print_function, absolute_import
+
+import warnings
+
+from . import _zeros
+from numpy import finfo, sign, sqrt
+
+_iter = 100
+_xtol = 1e-12
+_rtol = finfo(float).eps * 2
+
+__all__ = ['newton', 'bisect', 'ridder', 'brentq', 'brenth']
+
+CONVERGED = 'converged'
+SIGNERR = 'sign error'
+CONVERR = 'convergence error'
+flag_map = {0: CONVERGED, -1: SIGNERR, -2: CONVERR}
+
+
 def brentq(f, a, b, args=(),
            xtol=_xtol, rtol=_rtol, maxiter=_iter,
            full_output=False, disp=True):
