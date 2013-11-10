@@ -1,0 +1,115 @@
+#include <vector>
+#include "Solvers.h"
+ #include "math.h"
+ #include "MatrixMath.h"
+ #include <iostream>
+ #include "CPExceptions.h"
+ #include "CoolPropTools.h"
+
+ double Brent(FuncWrapper1D *f, double a, double b, double macheps, double t, int maxiter, std::string *errstr)
+     {
+           int iter;
+           *errstr=std::string("");
+           double fa,fb,c,fc,m,tol,d,e,p,q,s,r;
+       fa = f->call(a);
+       fb = f->call(b);
+   
+           // If one of the boundaries is to within tolerance, just stop
+           if (fabs(fb) < t) { return b;}
+           if (fabs(fa) < t) { return a;}
+   
+           if (fa*fb>0)
+           {
+                 throw ValueError(format("Inputs in Brent [%f,%f] do not bracket the root.  Function values are [%f,%f]",a,b,fa,fb));
+           }
+       c=a;
+       fc=fa;
+           iter=1;
+           if (fabs(fc)<fabs(fb)){
+           // Goto ext: from Brent ALGOL code
+           a=b;
+           b=c;
+           c=a;
+           fa=fb;
+           fb=fc;
+           fc=fa;
+           }
+       d=b-a;
+       e=b-a;
+       m=0.5*(c-b);
+       tol=2*macheps*fabs(b)+t;
+           while (fabs(m)>tol && fb!=0){
+           // See if a bisection is forced
+                   if (fabs(e)<tol || fabs(fa) <= fabs(fb)){
+               m=0.5*(c-b);
+               d=e=m;
+                   }
+                   else{
+               s=fb/fa;
+                           if (a==c){
+                   //Linear interpolation
+                   p=2*m*s;
+                   q=1-s;
+                           }
+                          else{
+                   //Inverse quadratic interpolation
+                   q=fa/fc;
+                   r=fb/fc;
+                   m=0.5*(c-b);
+                   p=s*(2*m*q*(q-r)-(b-a)*(r-1));
+                   q=(q-1)*(r-1)*(s-1);
+                           }
+                          if (p>0){
+                                   q=-q;
+                           }
+                           else{
+                                   p=-p;
+                           }
+               s=e;
+               e=d;
+               m=0.5*(c-b);
+                           if (2*p<3*m*q-fabs(tol*q) || p<fabs(0.5*s*q)){
+                   d=p/q;
+                           }
+                           else{
+                   m=0.5*(c-b);
+                   d=e=m;
+                           }
+                   }
+           a=b;
+           fa=fb;
+                   if (fabs(d)>tol){
+               b+=d;
+                   }
+           else if (m>0){
+               b+=tol;
+                   }
+                   else{
+               b+=-tol;
+                   }
+                   fb=f->call(b);
+                   if (fb*fc>0){
+               // Goto int: from Brent ALGOL code
+               c=a;
+               fc=fa;
+               d=e=b-a;
+                   }
+                   if (fabs(fc)<fabs(fb)){
+               // Goto ext: from Brent ALGOL code
+               a=b;
+               b=c;
+               c=a;
+               fa=fb;
+               fb=fc;
+               fc=fa;
+                   }
+           m=0.5*(c-b);
+           tol=2*macheps*fabs(b)+t;
+                   iter+=1;
+                   if (iter>maxiter){
+                          throw SolutionError(std::string("Reached maximum number of steps ")); 
+                           return _HUGE;
+                   }
+           }
+      return b;
+   }
