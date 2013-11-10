@@ -1,0 +1,91 @@
+
+
+
+
+
+def Brent(f,a,b,macheps,t):
+    """
+    Using the algorithm from
+
+    Brent, R. P., Algorithms for Minimization Without Derivatives.
+    Englewood Cliffs, NJ: Prentice-Hall, 1973. Ch. 3-4.
+    """
+    fa=f(a)
+    fb=f(b)
+    c=a
+    fc=fa
+    if abs(fc)<abs(fb):
+        # Goto ext: from Brent ALGOL code
+        a=b
+        b=c
+        c=a
+        fa=fb
+        fb=fc
+        fc=fa
+    d=b-a
+    e=b-a
+    m=0.5*(c-b)
+    tol=2*macheps*abs(b)+t
+    while (abs(m)>tol and fb!=0):
+        #See if a bisection is forced
+        if abs(e)<tol or abs(fa) <= abs(fb):
+            m=0.5*(c-b)
+            d=e=m
+        else:
+            s=fb/fa
+            if a==c:
+                #Linear interpolation
+                p=2*m*s
+                q=1-s
+            else:
+                #Inverse quadratic interpolation
+                q=fa/fc
+                r=fb/fc
+                m=0.5*(c-b)
+                p=s*(2*m*q*(q-r)-(b-a)*(r-1))
+                q=(q-1)*(r-1)*(s-1)
+            if p>0:
+                q=-q
+            else:
+                p=-p
+            s=e
+            e=d
+            m=0.5*(c-b)
+            if 2*p<3*m*q-abs(tol*q) or p<abs(0.5*s*q):
+                d=p/q
+            else:
+                m=0.5*(c-b)
+                d=e=m
+        a=b
+        fa=fb
+        if abs(d)>tol:
+            b+=d
+        elif m>0:
+            b+=tol
+        else:
+            b+=-tol
+        fb=f(b)
+        if fb*fc>0:
+            # Goto int: from Brent ALGOL code
+            c=a
+            fc=fa
+            d=e=b-a
+        if abs(fc)<abs(fb):
+            # Goto ext: from Brent ALGOL code
+            a=b
+            b=c
+            c=a
+            fa=fb
+            fb=fc
+            fc=fa
+        m=0.5*(c-b)
+        tol=2*macheps*abs(b)+t
+    return b
+
+def f(x):
+        return -26 + 85*x - 91*x**2 +44*x**3 -8*x**4 + x**5
+
+print("main called")
+
+y=Brent(f,0,5,1.48e-8,1.48e-8)
+print(y,f(y))
