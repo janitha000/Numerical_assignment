@@ -1,6 +1,7 @@
 #This is the only working code so far
 
-
+import numpy as np  
+import matplotlib.pyplot as plt  
 
 def Brent(f,a,b,macheps,t):
     """
@@ -83,6 +84,16 @@ def Brent(f,a,b,macheps,t):
 
 def f(x):
         return -26 + 85*x - 91*x**2 +44*x**3 -8*x**4 + x**5
+        
+def graph(formula, x_range):  
+    x = np.array(x_range)  
+    y = eval(formula)
+    plt.plot(x, y)
+    #plt.xticks(np.arange(min(x), max(x), 0.5))
+    plt.axhline(0, color='black')
+    plt.show()
+    
+graph('-26 + 85*x - 91*x**2 +44*x**3 -8*x**4 + x**5', range(0, 5))
 
 print("main called")
 
