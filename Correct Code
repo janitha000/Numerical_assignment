@@ -24,9 +24,9 @@ def Brent(f,a,b,macheps,t):
         fc=fa
     d=b-a
     e=b-a
-    m=0.5*(c-b)
-    tol=2*macheps*abs(b)+t
-    while (abs(m)>tol and fb!=0):
+    m=0.5*(c-b)                                 #Get the middle Value
+    tol=2*macheps*abs(b)+t                      #Calculate the minimum tolerence value
+    while (abs(m)>tol and fb!=0):               #While the minimum tolarence is not proven
         #See if a bisection is forced
         if abs(e)<tol or abs(fa) <= abs(fb):
             m=0.5*(c-b)
@@ -70,7 +70,7 @@ def Brent(f,a,b,macheps,t):
             c=a
             fc=fa
             d=e=b-a
-        if abs(fc)<abs(fb):
+        if abs(fc)<abs(fb):                         #Make sure f(b)<f(c)
             # Goto ext: from Brent ALGOL code
             a=b
             b=c
