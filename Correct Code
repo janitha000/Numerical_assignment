@@ -14,9 +14,9 @@ def Brent(f,a,b,macheps,t):
     fb=f(b)
     c=a
     fc=fa
-    if abs(fc)<abs(fb):
+    if abs(fc)<abs(fb):                         #Make always f(b)<f(c) 
         # Goto ext: from Brent ALGOL code
-        a=b
+        a=b                                     #Interchange a,b and c  
         b=c
         c=a
         fa=fb
